@@ -1,27 +1,36 @@
 <template>
-	<view class="search-container">
-		<uni-search-bar placeholder="请输入搜索内容"></uni-search-bar>
+	<view class="search-container" @click="toSearch">
+		<uni-search-bar readonly placeholder="请输入搜索内容"></uni-search-bar>
 	</view>
-	<swiper indicator-dots circular autoplay>
+	<swiper indicator-dots circular autoplay style="margin-top: 56px;">
 		<swiper-item v-for="(item, idx) in swiperList" :key="idx">
-			<image mode="widthFix" :src="item.image_src" style="width: 100%;"></image>
+			<navigator :url="`/subpkg/good_detail/good_detail?goods_id=${item.goods_id}`">
+				<image mode="widthFix" :src="item.image_src" style="width: 100%;"></image>
+			</navigator>
 		</swiper-item>
 	</swiper>
 	<view class="nav-list-container">
 		<view v-for="(item, idx) in navList" :key="idx">
-			<image mode="widthFix" :src="item.image_src"></image>
+			<navigator open-type="switchTab" url="/pages/cate/cate">
+				<image mode="widthFix" :src="item.image_src"></image>
+			</navigator>
 		</view>
 	</view>
 	<view class="floor-list-container" v-for="(item, idx) in floorList" :key="idx">
 		<image mode="widthFix" :src="item.floor_title.image_src" class="floor-list-title"></image>
 		<view class="floor-list-row">
 			<view>
-				<image mode="widthFix" :src="item.product_list[0].image_src"
-					:style="{width: item.product_list[0].image_width + 'rpx'}"></image>
+				<navigator :open-type="item.product_list[0].open_type" :url="item.product_list[0].navigator_url">
+					<image mode="widthFix" :src="item.product_list[0].image_src"
+						:style="{width: item.product_list[0].image_width + 'rpx'}"></image>
+				</navigator>
 			</view>
 			<view class="floor-list-block">
-				<image v-for="img_item in item.product_list.slice(1)" :src="img_item.image_src" mode="widthFix"
-					:style="{width: img_item.image_width + 'rpx'}" :key="img_item.name"></image>
+				<navigator :open-type="img_item.open_type" :url="img_item.navigator_url"
+					v-for="img_item in item.product_list.slice(1)" :key="img_item.name">
+					<image :src="img_item.image_src" mode="widthFix" :style="{width: img_item.image_width + 'rpx'}">
+					</image>
+				</navigator>
 			</view>
 		</view>
 	</view>
@@ -41,7 +50,11 @@
 			};
 		},
 		methods: {
-
+			toSearch() {
+				uni.navigateTo({
+					url: "/subpkg/search/search"
+				})
+			}
 		},
 		onLoad() {
 			var loading = 0;
@@ -72,7 +85,17 @@
 					url: `${config.baseUrl}/api/public/v1/home/floordata`
 				})
 				.then(res => {
-					this.floorList = res.data.message
+					this.floorList = res.data.message.map(data => {
+						return {
+							...data,
+							product_list: data.product_list.map(product => {
+								return {
+									...product,
+									navigator_url: `/subpkg/good_list/good_list?query=${product.navigator_url.split("=")[1]}`
+								}
+							})
+						}
+					})
 					loading += 1
 					if (loading == 3) {
 						uni.hideLoading()
@@ -85,6 +108,12 @@
 <style lang="scss">
 	.search-container {
 		background-color: #aa0000;
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 56px;
+		width: 100%;
+		z-index: 999;
 	}
 
 	.nav-list-container {

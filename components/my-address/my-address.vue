@@ -11,7 +11,6 @@
 				<text>电话：{{address.telNumber}}</text>
 				<uni-icons type="right"></uni-icons>
 			</view>
-			
 		</view>
 		<view>
 			收货地址：{{fullAddress}}

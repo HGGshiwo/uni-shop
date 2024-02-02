@@ -2,7 +2,7 @@
 	<scroll-view scroll-y :style="{height: wh + 'px'}" @scrolltolower="loadMore">
 		<view class="container" v-for="(good, i) in goodList" :key="i" @click="handleClick(good.goods_id)">
 			<view>
-				<image :src="good.goods_big_logo"></image>
+				<image style="height: 100px; width: 100px;" :src="good.goods_big_logo"></image>
 			</view>
 			<view class="text-container">
 				<text style="font-size: small;">{{good.goods_name}}</text>
@@ -15,14 +15,15 @@
 <script>
 	import config from '@/config.js'
 	export default {
+		name:"good_list",
+		props: ['query'],
 		data() {
 			return {
 				goodList: [],
 				wh: 0,
 			};
 		},
-		onLoad(options) {
-			this.options = options
+		onLoad() {
 			this.pagenum = 0
 			this.total = 1
 			this.pagesize = 20
@@ -40,12 +41,7 @@
 					title: "请求数据中"
 				})
 				uni.request({
-						url: `${config.baseUrl}/api/public/v1/goods/search`,
-						data: {
-							...this.options,
-							pagenum: this.pagenum,
-							pagesize: this.pagesize
-						}
+						url: `${config.baseUrl}/api/public/v1/goods/search?${query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`
 					})
 					.then(res => {
 						this.goodList = this.goodList.concat(res.data.message.goods)
@@ -80,11 +76,6 @@
 	.container {
 		display: flex;
 		flex-direction: row;
-
-		image {
-			height: 100px;
-			width: 100px;
-		}
 	}
 
 	.text-container {

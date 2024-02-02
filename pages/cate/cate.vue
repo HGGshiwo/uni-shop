@@ -1,6 +1,6 @@
 <template>
-	<view class="search-container">
-		<uni-search-bar placeholder="请输入搜索内容"></uni-search-bar>
+	<view class="search-container" @click="toSearch">
+		<uni-search-bar readonly placeholder="请输入搜索内容"></uni-search-bar>
 	</view>
 	<view class="container">
 		<!-- 左侧第一级菜单 -->
@@ -48,10 +48,14 @@
 				this.active = i
 				this.scrollTop = 1 - this.scrollTop //这个值必须变动才可以，如果写死是0只有第一次有效,1和0的效果是类似的
 			},
-
 			navigate(cid) {
 				uni.navigateTo({
 					url: `/subpkg/good_list/good_list?cid=${cid}`
+				})
+			},
+			toSearch() {
+				uni.navigateTo({
+					url: "/subpkg/search/search"
 				})
 			}
 		},

@@ -24,10 +24,10 @@ export default {
 			if (!!good) {
 				good.goods_num += 1
 			} else {
-				state.cartList.push({
-					...cart,
+				state.cartList.unshift({
 					goods_num: 1,
 					checked: false,
+					...cart,
 				})
 			}
 			this.commit("cart/save")

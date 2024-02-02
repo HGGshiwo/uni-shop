@@ -57,6 +57,16 @@
 				"navigationBarBackgroundColor": "#aa0000",
 				"navigationBarTextStyle": "white"
 			}
+		},
+		{
+			"path" : "search/search",
+			"style" : 
+			{
+				"navigationBarTitleText" : "黑马优购",
+				"enablePullDownRefresh" : false,
+				"navigationBarBackgroundColor": "#aa0000",
+				"navigationBarTextStyle": "white"
+			}
 		}]
 	}],
 	"globalStyle": {

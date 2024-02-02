@@ -18,7 +18,7 @@
 		快递：免运费
 	</view>
 	<rich-text :nodes="goodInfo.goods_introduce"></rich-text>
-	<uni-goods-nav :fill="true" :options="options" @buttonClick="buttonClick" />
+	<uni-goods-nav :fill="true" :options="options" @buttonClick="buttonClick" @click="click"/>
 </template>
 
 <script>
@@ -48,8 +48,23 @@
 				})
 		},
 		methods: {
-			buttonClick() {
-				this.add(this.goodInfo)
+			click(e) {
+				if(e.index === 1) {
+					uni.switchTab({
+						url: "/pages/cart/cart"
+					})
+				}
+			},
+			buttonClick(e) {
+				if(e.index == 1) {
+					uni.switchTab({
+						url: "/pages/cart/cart"
+					})
+					this.add({...this.goodInfo, checked: true})
+				}
+				else {
+					this.add(this.goodInfo)
+				}
 			},
 			...mapMutations('cart', ['add'])
 		},

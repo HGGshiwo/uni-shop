@@ -49,6 +49,7 @@
 		mapGetters,
 		mapMutations
 	} from 'vuex'
+	import config from '@/config.js'
 
 	export default {
 		mixins: [set_badge],
@@ -66,10 +67,12 @@
 		computed: {
 			...mapState('cart', ['cartList']),
 			...mapGetters('cart', ['totalPrice', 'cartNum', 'totalChecked', 'checkNum']),
-			...mapState('user', ['address', 'token'])
+			...mapState('user', ['token', 'address']),
+			...mapGetters('user', ['fullAddress']),
 		},
 		methods: {
 			...mapMutations('cart', ['add', 'update', 'check', 'checkAll']),
+			...mapMutations('user', ['setRedirect']),
 			settle() {
 				if(this.checkNum === 0) {
 					uni.showToast({
@@ -84,10 +87,51 @@
 					 })
 				 }
 				 else if(!this.token) {
-				 	uni.showToast({
-				 		title: "请先登录",
-						icon: 'error'
-				 	})
+					var t = 3;
+					const showTips = () => {
+						uni.showToast({
+							title: `请先登录，${t--}s后跳转到登录界面`,
+							icon: 'none',
+							mask: true //防止用户点击？？好像不是必须的
+						})
+					 }
+					showTips(t)
+					this.timer = setInterval(()=>{
+						if(t == 0) {
+							clearInterval(this.timer)
+							this.setRedirect("pages/cart/cart")
+							uni.switchTab({
+								url: "/pages/my/my"
+							})
+						}
+						else {
+							showTips(t)
+						}
+					}, 1000)
+				 }
+				 else {
+					 //创建订单
+					 uni.request({
+					 	url: `${config.baseUrl}/api/public/v1/my/orders/create`,
+						method: "POST",
+						data: {
+							order_price: this.totalPrice,
+							consignee_addr: this.fullAddress,
+							goods: this.cartList.filter(cart => cart.checked).map(cart =>({
+								goods_id: cart.goods_id,
+								goods_number: cart.goods_num,
+								goods_price: cart.goods_price
+							}))
+						},
+						header: {
+							Authorization: this.token
+						}
+					 }).then(res => {
+						 console.log(res)
+						 uni.showToast({
+						 	title: "支付成功！"
+						 })
+					 })
 				 }
 			},
 			clickRadio(goods_id) {
