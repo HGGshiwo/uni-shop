@@ -95,7 +95,7 @@
 								})
 								.then(res => {
 									//如果用户同意获取个人信息，则替换成用户信息
-									userInfo = detail.userInfo
+									userInfo = res.userInfo
 								})
 						}
 					})
